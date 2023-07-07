@@ -1,7 +1,7 @@
 **P2: Monte Carlo Tree Search for Ultimate Tic-Tac-Toe**  
 - Team member:  
   - Zhuo Chen
-  - Luciano L Lorenzana
+  - Luciano Loma Lorenzana
   
 - **Requirement**  
   - - [ ] Implement mcts_vanilla.py that uses MCTS with a full, random rollout. mcts_vanilla must beat rollout_bot most of the time.   
