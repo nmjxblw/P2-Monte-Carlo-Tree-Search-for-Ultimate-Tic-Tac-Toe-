@@ -18,8 +18,25 @@ def traverse_nodes(node, board, state, identity):
     Returns:        A node from which the next stage of the search can proceed.
 
     """
-    pass
+    legal_board_act = board.legal_actions(state)
+    leaf_node  = {}
+    nodes = node.keys()
+    while  nodes:
+        child = nodes.pop()
+        if child.child_nodes == {}:
+            # find a leaf node
+            # checking if child's action are legal
+            for curr_action in child.untried_actions:
+                if curr_action in legal_board_act:
+                    # push it into the dict
+                    leaf_node[child] = None
+        else:
+            # not a leaf node
+            # push the children of the node into the list
+            nodes += node.keys()
+
     # Hint: return leaf_node
+    return  leaf_node
 
 
 def expand_leaf(node, board, state):
@@ -33,9 +50,17 @@ def expand_leaf(node, board, state):
     Returns:    The added child node.
 
     """
-    pass
-    # Hint: return new_node
 
+    
+    # Hint: return new_node
+    # node is parent, we need to know the node action
+
+    curr_node = node
+    curr_node_action = node.action
+    chilen_of_curr_node_action_list = curr_node.untried_action
+    new_node = MCTSNode(parent, parent_action, action_list)
+    new_node.parent.child_nodes[new_node] = None
+    return 
 
 def rollout(board, state):
     """ Given the state of the game, the rollout plays out the remainder randomly.
@@ -45,7 +70,9 @@ def rollout(board, state):
         state:  The state of the game.
 
     """
-    pass
+    # pass
+    # maybe a solution
+    return choice(board.legal_actions(state))
 
 
 def backpropagate(node, won):
@@ -56,7 +83,12 @@ def backpropagate(node, won):
         won:    An indicator of whether the bot won or lost the game.
 
     """
-    pass
+    if node.parent == None:
+        return
+    else:
+        node.wins += won
+        node.visits += 1
+        backpropagate(node.parent,won)
 
 
 def think(board, state):
@@ -81,6 +113,19 @@ def think(board, state):
 
         # Do MCTS - This is all you!
 
+        # 1.Selection
+        # get childen 
+        for node_acation in node.untried_actions:
+            if board.is_legal(board,node_acation):
+               node = expand_leaf(node,board,state)
+               node.parent_action = node_acation
+
+        # leaf_nodes = traverse_nodes(node, board, state, identity_of_bot)
+        # 2.Expansion
+        # 3.Simulation
+        # 4.Backpropagation
+        # root_node = best_node
+
     # Return an action, typically the most frequently used action (from the root) or the action with the best
     # estimated win rate.
-    return None
+    return action
