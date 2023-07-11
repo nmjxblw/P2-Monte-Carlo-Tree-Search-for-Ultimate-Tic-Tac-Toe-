@@ -3,7 +3,7 @@ from random import choice
 from math import sqrt, log, inf
 import os
 
-num_nodes = 10
+num_nodes = 1000
 explore_faction = 2.0
 
 
@@ -76,16 +76,7 @@ def traverse_nodes(node, board, state, identity):
                 return temp_node
         # we pick up the best action, then we need to update state
         if best_action == None:
-            print(board.display(state, node.parent_action))
-            print(f"error node: {node}")
-            print(f"error node's untried action:{node.untried_actions}")
-            print(f"error node's child_nodes: {node.child_nodes.keys()}")
-            print(f"error node form action: {node.parent_action}")
-            print(f"error node's parent_untried_actions:{node.parent.untired_actions}")
-            print(f"error node's parent_from_action:{node.parent.parent_action}")
-            print(f"current state: {state}")
-            print(f"current state legal_actions: {board.legal_actions(state)}")
-            os.system("pause")
+            return node.parent
         new_state = board.next_state(state, best_action)
         # and then the best child node become parent node
         #
@@ -193,7 +184,7 @@ def think(board, state):
         leaf_node = expand_leaf(node, board, sampled_game)
         sampled_game = board.next_state(sampled_game, leaf_node.parent_action)
         sampled_game = rollout(board, sampled_game)
-        won = board.win_values(sampled_game)[identity_of_bot]
+        won = board.points_values(sampled_game)[identity_of_bot]
         backpropagate(leaf_node, won)
 
     # we finished building the tree
