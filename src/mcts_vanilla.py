@@ -3,7 +3,7 @@ from random import choice
 from math import sqrt, log, inf
 import os
 
-num_nodes = 1000
+num_nodes = 10
 explore_faction = 2.0
 
 
@@ -17,7 +17,6 @@ def traverse_nodes(node, board, state, identity):
         identity:   The bot's identity, either 'red' or 'blue'.
 
     Returns:        A node from which the next stage of the search can proceed.
-
     """
 
     if len(node.untried_actions) > 0 or board.is_ended(state):
@@ -151,7 +150,6 @@ def backpropagate(node, won):
     Args:
         node:   A leaf node.
         won:    An indicator of whether the bot won or lost the game.
-
     """
     # update the informations inside the node
     node.wins += won
