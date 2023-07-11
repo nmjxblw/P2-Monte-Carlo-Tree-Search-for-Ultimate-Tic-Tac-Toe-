@@ -2,7 +2,7 @@ from mcts_node import MCTSNode
 from random import choice
 from math import sqrt, log, inf
 
-num_nodes = 1000
+num_nodes = 10
 explore_faction = 2.0
 
 
@@ -17,20 +17,19 @@ def traverse_nodes(node, board, state, identity):
 
     Returns:        A node from which the next stage of the search can proceed.
     """
-    # print("curr_state: ", state)
+    print("curr_state: ", state)
 
     act_list = node.untried_actions
-    our_board_bool = state[-1] == identity
-    # print("our board: ", our_board_bool)
+    our_board_bool = identity == board.current_player(state)
+    print("our board: ", our_board_bool)
 
     if len(act_list) > 0 or board.is_ended(state):
         return node
     else:
-        best_val = float("-inf")
+        # best_val = float("-inf")
+        best_val = 0 - 9999
         best_act = list(node.child_nodes.keys())[0]
-        # print("best_act: ", best_act)
         best_node = node.child_nodes[best_act]
-        # best_val = 0 - 9999
 
         # print("all child: ", node.child_nodes.items())
         for curr_act, curr_node in node.child_nodes.items():
@@ -38,7 +37,7 @@ def traverse_nodes(node, board, state, identity):
             if not our_board_bool:
                 child_win_rate = 1 - child_win_rate
             curr_val = (child_win_rate / curr_node.visits) + explore_faction * sqrt(
-                log(node.visits) / child_win_rate
+                log(node.visits) / curr_node.visits
             )
 
             if curr_val > best_val:
@@ -47,6 +46,7 @@ def traverse_nodes(node, board, state, identity):
                 best_node = curr_node
 
         new_state = board.next_state(state, best_act)
+        print("new state: ", new_state)
 
         return traverse_nodes(best_node, board, new_state, identity)
 
@@ -100,6 +100,7 @@ def backpropagate(node, won):
         won:    An indicator of whether the bot won or lost the game.
     """
 
+    # print("won val: ", won)
     node.wins += won
     node.visits += 1
     if node.parent != None:
@@ -118,7 +119,6 @@ def think(board, state):
 
     """
     identity_of_bot = board.current_player(state)
-    # an_Act =
     root_node = MCTSNode(
         parent=None, parent_action=None, action_list=board.legal_actions(state)
     )
@@ -127,7 +127,6 @@ def think(board, state):
     # print(f"leaf_node.parent_action = {leaf_node.parent_action}")
     for step in range(num_nodes):
         # Copy the game for sampling a playthrough
-        # print("step: ", step)
         sampled_game = state
 
         # Start at root
@@ -144,11 +143,15 @@ def think(board, state):
     # Return an action, typically the most frequently used action (from the root) or the action with the best
     # estimated win rate.
 
-    # most_visits = float("-inf")
-    most_wins = float("-inf")
+    most_wins = 0 - 9999
     best_act = None
     for curr_act, curr_child in root_node.child_nodes.items():
+        # print("most wins: ", most_wins)
+        # if curr_child.wins > most_wins or curr_child.visits > most_visits:
         if curr_child.wins > most_wins:
+            # print("child wins: ", curr_child.wins)
+            most_wins = curr_child.wins
+            # most_visits = curr_child.visits
             best_act = curr_act
 
     return best_act
