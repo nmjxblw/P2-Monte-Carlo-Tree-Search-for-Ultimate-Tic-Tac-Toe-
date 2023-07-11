@@ -5,6 +5,8 @@ import mcts_vanilla
 import mcts_modified
 import random_bot
 import rollout_bot
+import sys
+import os
 
 players = dict(
     random_bot=random_bot.think,
@@ -45,10 +47,13 @@ for i in range(rounds):
     last_action = None
     current_player = player1
     while not board.is_ended(state):
+        # os.system("cls")
+        # print(board.display(state, last_action))
         last_action = current_player(board, state)
         state = board.next_state(state, last_action)
         current_player = player1 if current_player == player2 else player2
     print("Finished!")
+    print(board.display(state, last_action))
     print()
     final_score = board.points_values(state)
     winner = 'draw'
