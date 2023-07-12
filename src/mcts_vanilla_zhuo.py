@@ -193,7 +193,7 @@ def think(board, state):
     for action in root_node.child_nodes.keys():
         if (
             factor
-            < root_node.child_nodes[action].wins - root_node.child_nodes[action].visits
+            < root_node.child_nodes[action].wins + root_node.child_nodes[action].visits
         ):
             factor = (
                 root_node.child_nodes[action].wins

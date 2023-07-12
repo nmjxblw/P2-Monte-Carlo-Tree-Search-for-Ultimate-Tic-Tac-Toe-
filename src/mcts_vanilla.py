@@ -42,8 +42,7 @@ def traverse_nodes(node, board, state, identity):
         best_node = None
         best_action = None
         best_val = -inf
-        worse_val= inf
-
+        worse_val = inf
 
         for action in node.child_nodes.keys():
             # action is the key to get the child node
@@ -108,7 +107,7 @@ def expand_leaf(node, board, state):
         )
         # set new_node as a child of node
         node.child_nodes[action] = new_node
-       
+
         return new_node
     else:
         # untried_actions is empty
@@ -186,6 +185,8 @@ def think(board, state):
         sampled_game = rollout(board, sampled_game)
         won = board.points_values(sampled_game)[identity_of_bot]
         backpropagate(leaf_node, won)
+        if board.is_ended(state, leaf_node.parent_action):
+            break
 
     # we finished building the tree
     factor = -inf
@@ -193,11 +194,11 @@ def think(board, state):
     for action in root_node.child_nodes.keys():
         if (
             factor
-            < root_node.child_nodes[action].wins - root_node.child_nodes[action].visits
+            < root_node.child_nodes[action].wins / root_node.child_nodes[action].visits
         ):
             factor = (
                 root_node.child_nodes[action].wins
-                - root_node.child_nodes[action].visits
+                / root_node.child_nodes[action].visits
             )
             best_action = action
     # Return an action, typically the most frequently used action (from the root) or the action with the best
