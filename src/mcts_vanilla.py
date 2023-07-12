@@ -2,7 +2,7 @@ from mcts_node import MCTSNode
 from random import choice
 from math import sqrt, log, inf
 
-num_nodes = 1000
+num_nodes = 100
 explore_faction = 2.0
 
 
@@ -128,7 +128,6 @@ def think(board, state):
         parent=None, parent_action=None, action_list=board.legal_actions(state)
     )
 
-    # print(f"own_boxes = {board.owned_boxes(state)}")
     # leaf_node = traverse_nodes(root_node, board, state, identity_of_bot)
     # print(f"leaf_node.parent_action = {leaf_node.parent_action}")
     for step in range(num_nodes):
@@ -140,15 +139,15 @@ def think(board, state):
         node = root_node
 
         # Do MCTS - This is all you!
-        # pick a node
-        node = traverse_nodes(node, board, sampled_game, identity_of_bot)
-        leaf_node = expand_leaf(node, board, sampled_game)
-        sampled_game = board.next_state(sampled_game, leaf_node.parent_action)
-        sampled_game = rollout(board, sampled_game)
-        won = board.points_values(sampled_game)[identity_of_bot]
-        backpropagate(leaf_node, won)
-        if board.is_ended(state):
-            break
+        tmp_node = traverse_nodes(node, board, sampled_game, identity_of_bot)
+        tmp_leaf = expand_leaf(tmp_node[0], board, tmp_node[1])
+        tmp_state = rollout(board, tmp_leaf[1])
+        win_vals = board.points_values(tmp_state)
+        # print("win vals: ", win_vals)
+        # win_vals = board.win_values(tmp_state)
+        backpropagate(tmp_leaf[0], win_vals[identity_of_bot])
+
+        # print("untried list: ", node.untried_actions)
 
     # Return an action, typically the most frequently used action (from the root) or the action with the best
     # estimated win rate.
