@@ -128,15 +128,16 @@ def rollout(board, state):
     """
     end_bool = board.is_ended(state)
     if not end_bool:
-        # rand_act = choice(board.legal_actions(state))
-        # next_state = board.next_state(state, rand_act)
         for action in board.legal_actions(state):
             next_state = board.next_state(state, action)
             if board.owned_boxes(next_state) != board.owned_boxes(state):
                 return rollout(board, next_state)
-        return rollout(
-            board, board.next_state(state, choice(board.legal_actions(state)))
-        )
+            for move in board.legal_actions(next_state):
+                move_state = board.next_state(state, move)
+                if board.owned_boxes(move_state) != board.owned_boxes(next_state):
+                    return rollout(board, move_state)
+        return rollout(board,choice(board.legal_actions(state)))
+
     return state
     # pass
 
@@ -207,6 +208,9 @@ def think(board, state):
     factor = -inf
     best_action = None
     for action in root_node.child_nodes.keys():
+        print(
+            f"action: {action} \nwin_rate:{root_node.child_nodes[action].wins / root_node.child_nodes[action].visits}"
+        )
         if board.owned_boxes(board.next_state(state, action)) != board.owned_boxes(
             state
         ):
@@ -220,6 +224,7 @@ def think(board, state):
                 / root_node.child_nodes[action].visits
             )
             best_action = action
+    print(f"mod pick :{best_action}")
     # Return an action, typically the most frequently used action (from the root) or the action with the best
     # estimated win rate.
     return best_action
