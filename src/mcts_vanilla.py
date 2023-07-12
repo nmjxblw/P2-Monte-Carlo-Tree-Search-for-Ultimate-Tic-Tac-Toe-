@@ -168,6 +168,7 @@ def think(board, state):
         parent=None, parent_action=None, action_list=board.legal_actions(state)
     )
 
+    # print(f"own_boxes = {board.owned_boxes(state)}")
     # leaf_node = traverse_nodes(root_node, board, state, identity_of_bot)
     # print(f"leaf_node.parent_action = {leaf_node.parent_action}")
     for step in range(num_nodes):
@@ -185,7 +186,7 @@ def think(board, state):
         sampled_game = rollout(board, sampled_game)
         won = board.points_values(sampled_game)[identity_of_bot]
         backpropagate(leaf_node, won)
-        if board.is_ended(state, leaf_node.parent_action):
+        if board.is_ended(state):
             break
 
     # we finished building the tree

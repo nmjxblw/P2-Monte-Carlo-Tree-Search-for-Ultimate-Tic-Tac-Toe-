@@ -1,7 +1,7 @@
 import sys
 from timeit import default_timer as time
 import p2_t3
-import mcts_vanilla_zhuo
+import mcts_vanilla
 import mcts_modified
 import random_bot
 import rollout_bot
@@ -11,7 +11,7 @@ import os
 players = dict(
     random_bot=random_bot.think,
     rollout_bot=rollout_bot.think,
-    mcts_vanilla=mcts_vanilla_zhuo.think,
+    mcts_vanilla=mcts_vanilla.think,
     mcts_modified=mcts_modified.think
 )
 
