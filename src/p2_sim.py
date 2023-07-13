@@ -7,6 +7,7 @@ import random_bot
 import rollout_bot
 import sys
 import os
+import threading
 
 players = dict(
     random_bot=random_bot.think,
@@ -38,31 +39,41 @@ rounds = 100
 wins = {'draw':0, 1:0, 2:0}
 
 start = time()  # To log how much time the simulation takes.
+threads = []
 for i in range(rounds):
+    def run():
+        print("")
+        print("Round %d, fight!" % i)
 
-    print("")
-    print("Round %d, fight!" % i)
+        state = state0
+        last_action = None
+        current_player = player1
+        while not board.is_ended(state):
+            # os.system("cls")
+            # print(board.display(state, last_action))
+            last_action = current_player(board, state)
+            state = board.next_state(state, last_action)
+            current_player = player1 if current_player == player2 else player2
+        print("Finished!")
+        print(board.display(state, last_action))
+        print()
+        final_score = board.points_values(state)
+        winner = 'draw'
+        if final_score[1] == 1:
+            winner = 1
+        elif final_score[2] == 1:
+            winner = 2
+        print("The %s bot wins this round! (%s)" % (winner, str(final_score)))
+        global wins
+        # with threading.Lock():
+        wins[winner] = wins.get(winner, 0) + 1
+    
+    # t = threading.Thread(target=run)
+    # t.start()
 
-    state = state0
-    last_action = None
-    current_player = player1
-    while not board.is_ended(state):
-        # os.system("cls")
-        # print(board.display(state, last_action))
-        last_action = current_player(board, state)
-        state = board.next_state(state, last_action)
-        current_player = player1 if current_player == player2 else player2
-    print("Finished!")
-    print(board.display(state, last_action))
-    print()
-    final_score = board.points_values(state)
-    winner = 'draw'
-    if final_score[1] == 1:
-        winner = 1
-    elif final_score[2] == 1:
-        winner = 2
-    print("The %s bot wins this round! (%s)" % (winner, str(final_score)))
-    wins[winner] = wins.get(winner, 0) + 1
+# for t in threads:
+#     t.join()
+    run()
 
 print("")
 print("Final win counts:", dict(wins))

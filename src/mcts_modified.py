@@ -2,7 +2,8 @@ from mcts_node import MCTSNode
 from random import choice
 from math import sqrt, log, inf
 
-num_nodes = 1000
+num_nodes = 200
+
 explore_faction = 2.0
 
 
@@ -87,14 +88,30 @@ def rollout(board, state):
         state:  The state of the game.
 
     """
+    bot_id = state[-1]
     end_bool = board.is_ended(state)
     if not end_bool:
+        best_score = float("-inf")
+        best_action = None
         for action in board.legal_actions(state):
             next_state = board.next_state(state, action)
-            if board.owned_boxes(next_state) != board.owned_boxes(state):
-                return rollout(board, next_state)
-            
-        return rollout(board,board.next_state(state,choice(board.legal_actions(state))))
+            # if board.owned_boxes(next_state) != board.owned_boxes(state):
+            #     return rollout(board, next_state)
+            for depth in range(2):
+                if board.is_ended(next_state):
+                    break
+                next_act = choice(list(board.legal_actions(next_state)))
+                next_state = board.next_state(next_state, next_act)
+            score = len(
+                [v for v in board.owned_boxes(next_state).values() if v == bot_id]
+            ) - len(
+                [v for v in board.owned_boxes(next_state).values() if v == 3 - bot_id]
+            )
+            if score > best_score:
+                best_score = score
+                best_action = action
+
+        return rollout(board, board.next_state(state, best_action))
 
     return state
     # pass
